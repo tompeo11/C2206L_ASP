@@ -25,9 +25,31 @@ namespace TEST.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
         {
-            return RedirectToAction("Index");
+            //validate name
+            bool checkValidateName = _db.Categories.Any(i => i.Name == category.Name);
+            if (checkValidateName)
+            {
+                ModelState.AddModelError("Name", "The category name already exist");
+            }
+
+            //validate displayorder
+            bool checkValidateDisplayOrder = _db.Categories.Any(i => i.DisplayOrder == category.DisplayOrder);
+            if (checkValidateDisplayOrder)
+            {
+                ModelState.AddModelError("DisplayOrder", "The category display order already exist");
+            }
+
+            //savedata
+            if (ModelState.IsValid) 
+            {
+                _db.Categories.Add(category);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(category);
         }
     }
 }

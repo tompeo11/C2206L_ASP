@@ -9,14 +9,20 @@
 		<div class="form-floating mb-3">
 			<input asp-for="Name" class="form-control" placeholder="Name">
 			<label asp-for="Name"></label>
+			<span asp-validation-for="Name" class="text-danger"></span>
 		</div>
 
 		<div class="form-floating mb-3">
 			<input asp-for="DisplayOrder" class="form-control" placeholder="DisplayOrder">
 			<label asp-for="DisplayOrder"></label>
+			<span asp-validation-for="DisplayOrder" class="text-danger"></span>
 		</div>
 
 		<button type="submit" class="btn btn-primary" style="width: 150px;">Create</button>
 		<a asp-controller="Category" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
 	</div>
 </form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
