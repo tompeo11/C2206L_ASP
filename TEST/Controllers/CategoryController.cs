@@ -51,5 +51,10 @@ namespace TEST.Controllers
             }
             return View(category);
         }
+
+        public IActionResult Edit(int? id)
+        {
+            return View();
+        }
     }
 }
