@@ -34,13 +34,10 @@
 
         <div class="form-floating mb-3">
             <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-controller="Categories" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
         </div>
     </div>
 </form>
-
-<div>
-    <a asp-controller="Categories" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

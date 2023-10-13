@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TEST.DAO;
 using TEST.Data;
+using TEST.Models;
 
 namespace TEST
 {
@@ -12,6 +14,10 @@ namespace TEST
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("anyName")));
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+            //builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            //builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             var app = builder.Build();
 

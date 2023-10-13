@@ -15,26 +15,27 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-floating mb-3">
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-control" placeholder="Name" />
             <label asp-for="Name" class="control-label"></label>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <div class="form-floating mb-3">
-            <input asp-for="DisplayOrder" class="form-control" />
+            <input asp-for="DisplayOrder" class="form-control" placeholder="DisplayOrder" />
             <label asp-for="DisplayOrder" class="control-label"></label>
             <span asp-validation-for="DisplayOrder" class="text-danger"></span>
         </div>
 
         <div class="form-floating mb-3">
             <input type="submit" value="Create" class="btn btn-primary" />
+            <a asp-controller="Category" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
         </div>
     </div>
 </form>
 
-<div>
-    <a asp-controller="Category" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
-</div>
+
+
+<partial name="_Notification" />
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

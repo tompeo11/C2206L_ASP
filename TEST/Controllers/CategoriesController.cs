@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TEST.DAO;
 using TEST.Data;
 using TEST.Models;
 
@@ -12,31 +13,31 @@ namespace TEST.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly GenericRepository<Category> _unitOfWork.categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
-        // GET: Categories
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-              return _context.Categories != null ? 
-                          View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
+            IEnumerable<Category> categories = _unitOfWork.categoryRepository.GetEntities(null,
+                q => q.OrderByDescending(c => c.DisplayOrder));
+            //var categories = _unitOfWork.categoryRepository.GetAll();
+            return View(categories);
         }
 
-        // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
+
             if (category == null)
             {
                 return NotFound();
@@ -45,51 +46,58 @@ namespace TEST.Controllers
             return View(category);
         }
 
-        // GET: Categories/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
+        public IActionResult Create([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
         {
+            bool checkCategoryNameExist = _unitOfWork.categoryRepository.GetEntities(i => i.Name == category.Name).Any();
+            bool checkCategoryDisplayOrderExist = _unitOfWork.categoryRepository.GetEntities(i => i.DisplayOrder == category.DisplayOrder).Any();
+
+
+
             //validate name
-            bool checkValidateName = _context.Categories.Any(i => i.Name == category.Name);
-            if (checkValidateName)
+            //bool checkValidateName = _unitOfWork.categoryRepository.GetAll().Any(i => i.Name == category.Name);
+
+            if (checkCategoryNameExist)
             {
+                TempData["categoryNameError"] = "The category name already exist";
                 ModelState.AddModelError("Name", "The category name already exist");
             }
 
             //validate displayorder
-            bool checkValidateDisplayOrder = _context.Categories.Any(i => i.DisplayOrder == category.DisplayOrder);
-            if (checkValidateDisplayOrder)
+            //bool checkValidateDisplayOrder = _unitOfWork.categoryRepository.GetAll().Any(i => i.DisplayOrder == category.DisplayOrder);
+
+            if (checkCategoryDisplayOrderExist)
             {
+                TempData["categoryDisplayOrderError"] = "The category display order already exist";
                 ModelState.AddModelError("DisplayOrder", "The category display order already exist");
             }
 
+
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                TempData["successCreate"] = "Add category successfully";
+                _unitOfWork.categoryRepository.Add(category);
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
 
-        // GET: Categories/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
+
             if (category == null)
             {
                 return NotFound();
@@ -97,36 +105,33 @@ namespace TEST.Controllers
             return View(category);
         }
 
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
+        public IActionResult Edit([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
         {
-            bool checkValidateName = _context.Categories.Any(i => i.Name == category.Name && i.Id != category.Id);
-            if (checkValidateName)
+            bool checkCategoryNameExist = _unitOfWork.categoryRepository.GetEntities(i => i.Name == category.Name && i.Id != category.Id).Any();
+            bool checkCategoryDisplayOrderExist = _unitOfWork.categoryRepository.GetEntities(i => i.DisplayOrder == category.DisplayOrder && i.Id != category.Id).Any();
+            //bool checkValidateName = _unitOfWork.categoryRepository.GetAll().Any(i => i.Name == category.Name && i.Id != category.Id);
+
+            if (checkCategoryNameExist)
             {
                 ModelState.AddModelError("Name", "The category name already exist");
             }
 
-            bool checkValidateDisplayOrder = _context.Categories.Any(i => i.DisplayOrder == category.DisplayOrder && i.Id != category.Id);
-            if (checkValidateDisplayOrder)
+            //bool checkValidateDisplayOrder = _unitOfWork.categoryRepository.GetAll().Any(i => i.DisplayOrder == category.DisplayOrder && i.Id != category.Id);
+
+            if (checkCategoryDisplayOrderExist)
             {
                 ModelState.AddModelError("DisplayOrder", "The category display order already exist");
-            }
-
-            if (id != category.Id)
-            {
-                return NotFound();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    TempData["successEdit"] = "Edit category successfully";
+                    _unitOfWork.categoryRepository.Update(category);
+                    _unitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -144,16 +149,14 @@ namespace TEST.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
             if (category == null)
             {
                 return NotFound();
@@ -162,28 +165,24 @@ namespace TEST.Controllers
             return View(category);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            if (_context.Categories == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
-            }
-            var category = await _context.Categories.FindAsync(id);
+            var category = _unitOfWork.categoryRepository.GetEntityById(id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                TempData["successDelete"] = "Delete category successfully";
+                _unitOfWork.categoryRepository.Delete(category);
             }
-            
-            await _context.SaveChangesAsync();
+
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_unitOfWork.categoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

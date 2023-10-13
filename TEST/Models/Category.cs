@@ -12,6 +12,7 @@ namespace TEST.Models
         public string? Name { get; set; }
 
         [DisplayName("My display order")]
+        [Required]
         public int? DisplayOrder { get; set; }
 
 
