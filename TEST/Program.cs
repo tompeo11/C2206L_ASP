@@ -36,12 +36,14 @@ namespace TEST
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
             ///  https://localhost:3001
-            
-                
-            AppDbInitializer.Seed(app);
+
+
+            //AppDbInitializer.Seed(app);
+
+
 
             app.Run();
         }

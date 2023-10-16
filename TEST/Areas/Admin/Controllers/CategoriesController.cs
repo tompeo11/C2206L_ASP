@@ -9,8 +9,9 @@ using TEST.DAO;
 using TEST.Data;
 using TEST.Models;
 
-namespace TEST.Controllers
+namespace TEST.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoriesController : Controller
     {
         //private readonly GenericRepository<Category> _unitOfWork.categoryRepository;
@@ -21,11 +22,17 @@ namespace TEST.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? search)
         {
-            IEnumerable<Category> categories = _unitOfWork.categoryRepository.GetEntities(null,
-                q => q.OrderByDescending(c => c.DisplayOrder));
-            //var categories = _unitOfWork.categoryRepository.GetAll();
+            //IEnumerable<Category> categories = _unitOfWork.categoryRepository.GetEntities(null,
+            //    q => q.OrderByDescending(c => c.DisplayOrder)).AsQueryable();
+            var categories = _unitOfWork.categoryRepository.GetAll();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                categories = categories.Where(c => c.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
             return View(categories);
         }
 
@@ -36,7 +43,7 @@ namespace TEST.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int)id);
 
             if (category == null)
             {
@@ -96,7 +103,7 @@ namespace TEST.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int)id);
 
             if (category == null)
             {
@@ -156,7 +163,7 @@ namespace TEST.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.categoryRepository.GetEntityById((int) id);
+            var category = _unitOfWork.categoryRepository.GetEntityById((int)id);
             if (category == null)
             {
                 return NotFound();
@@ -182,7 +189,7 @@ namespace TEST.Controllers
 
         private bool CategoryExists(int id)
         {
-          return (_unitOfWork.categoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_unitOfWork.categoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

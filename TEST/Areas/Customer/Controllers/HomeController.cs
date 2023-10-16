@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using TEST.Models;
 
-namespace TEST.Controllers
+namespace TEST.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

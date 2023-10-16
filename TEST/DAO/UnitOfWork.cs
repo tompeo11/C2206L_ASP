@@ -6,8 +6,9 @@ namespace TEST.DAO
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
-
         private GenericRepository<Category> _categoryRepository;
+        private GenericRepository<CoverType> _coverTypeRepository;
+        private GenericRepository<Product> _productRepository;
 
         public UnitOfWork(ApplicationDbContext dbContext) 
         {
@@ -24,6 +25,32 @@ namespace TEST.DAO
                 }
 
                 return _categoryRepository;
+            }
+        }
+
+        public GenericRepository<CoverType> coverTypeRepository
+        {
+            get
+            {
+                if (_coverTypeRepository == null)
+                {
+                    this._coverTypeRepository = new GenericRepository<CoverType>(_db);
+                }
+
+                return _coverTypeRepository;
+            }
+        }
+
+        public GenericRepository<Product> productRepository
+        {
+            get
+            {
+                if (_productRepository == null)
+                {
+                    this._productRepository = new GenericRepository<Product>(_db);
+                }
+
+                return _productRepository;
             }
         }
 

@@ -9,7 +9,7 @@ namespace TEST.Data
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-
+                
                 if (context != null)
                 {
                     context.Database.EnsureCreated();

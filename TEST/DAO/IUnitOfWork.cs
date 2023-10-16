@@ -7,5 +7,7 @@ namespace TEST.DAO
         void Save();
 
         GenericRepository<Category> categoryRepository { get; }
+        GenericRepository<CoverType> coverTypeRepository { get; }
+        GenericRepository<Product> productRepository { get; }
     }
 }
