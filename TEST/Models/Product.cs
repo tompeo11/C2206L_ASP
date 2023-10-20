@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TEST.Models
@@ -9,31 +10,33 @@ namespace TEST.Models
         public int Id { get; set; }
 
         [Required]
-        public string? Title { get; set; }
+        public string Title { get; set; } = "";
 
         public string? Description { get; set; }
 
         [Required]
-        public string? ISBN { get; set; }
+        public string ISBN { get; set; } = "";
 
         [Required]
-        public string? Author { get; set; }
+        public string Author { get; set; } = "";
 
         [Required]
-        public double? Price { get; set; }
+        public double Price { get; set; }
 
         public double? Price50 { get; set; }
 
         public double? Price100 { get; set; }
 
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "default.jpg";
 
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
-        public Category? Category { get; set; }
+        [ValidateNever]
+        public Category Category { get; set; }
 
         public int CoverTypeId { get; set; }
         [ForeignKey("CoverTypeId")]
-        public CoverType? CoverType { get; set; }
+        [ValidateNever]
+        public CoverType CoverType { get; set; }
     }
 }

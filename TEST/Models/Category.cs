@@ -13,9 +13,9 @@ namespace TEST.Models
 
         [DisplayName("My display order")]
         [Required]
-        public int? DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
 
 
-        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
 }

@@ -12,8 +12,8 @@ using TEST.Data;
 namespace TEST.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231016140439_AddProductAndCoverType")]
-    partial class AddProductAndCoverType
+    [Migration("20231020132511_CategoryCoverTypeProduct")]
+    partial class CategoryCoverTypeProduct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,8 +94,7 @@ namespace TEST.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Price")
-                        .IsRequired()
+                    b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<double?>("Price100")

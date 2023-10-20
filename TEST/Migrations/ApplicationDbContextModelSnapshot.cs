@@ -92,8 +92,7 @@ namespace TEST.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Price")
-                        .IsRequired()
+                    b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<double?>("Price100")

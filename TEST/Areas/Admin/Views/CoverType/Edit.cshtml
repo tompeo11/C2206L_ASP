@@ -1,0 +1,40 @@
+﻿@model TEST.Models.CoverType
+
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-white">Edit cover type</h1>
+
+<hr />
+
+<form asp-action="Edit" class="text-white">
+    <div class="border p-3 mt-4">
+        <input type="hidden" asp-for="Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Name" class="form-control" placeholder="Name" />
+            <label asp-for="Name" class="control-label"></label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="submit" value="Update" class="btn btn-primary" />
+            <a asp-controller="CoverType" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
+        </div>
+    </div>
+</form>
+
+
+
+<partial name="_Notification" />
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

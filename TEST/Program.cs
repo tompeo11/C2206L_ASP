@@ -41,7 +41,7 @@ namespace TEST
             ///  https://localhost:3001
 
 
-            //AppDbInitializer.Seed(app);
+            AppDbInitializer.Seed(app);
 
 
 

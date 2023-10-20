@@ -12,12 +12,12 @@ using TEST.Models;
 namespace TEST.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoriesController : Controller
+    public class CategoryController : Controller
     {
         //private readonly GenericRepository<Category> _unitOfWork.categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CategoriesController(IUnitOfWork unitOfWork)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

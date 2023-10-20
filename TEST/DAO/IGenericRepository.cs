@@ -1,21 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using TEST.Data;
+﻿using System.Linq.Expressions;
 
-namespace TEST.DAO
+namespace TEST.DAO;
+
+public interface IGenericRepository<T> where T : class
 {
-    public interface IGenericRepository<T> where T : class
-    {
-        void Add(T entity);
+    IEnumerable<T> GetAll(string? includeProperties = null);
+    public IEnumerable<T> GetEntities(Expression<Func<T, bool>>? filter, string? includeProperties = null,
+        string? orderBy = null, bool isDescending = false);
 
-        void Delete(T entity);
-
-        void Update(T entity);
-
-        T GetEntityById(object id);
-
-        IEnumerable<T> GetAll();
-
-        IEnumerable<T> GetEntities(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy);
-    }
+    T? GetEntityById(object id);
+    void Add(T obj);
+    void Update(T obj);
+    void Delete(object id);
 }

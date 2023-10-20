@@ -11,6 +11,6 @@ namespace TEST.Models
         [DisplayName("CoverType Name")]
         [MaxLength(50)]
         [Required]
-        public string? Name { get; set; }
+        public string Name { get; set; } = "";
     }
 }
