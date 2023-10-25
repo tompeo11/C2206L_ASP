@@ -30,6 +30,75 @@ namespace TEST.Areas.Admin.Controllers
             return View(products);
         }
 
+
+
+
+
+
+
+
+        public IActionResult Upsert(int? id)
+        {
+            Product product;
+
+            if (id == null || id == 0)
+            {
+                product = new Product();
+            }
+            else
+            {
+                product = _unitOfWork.productRepository.GetEntityById((int)id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            ViewData["CategoryId"] = new SelectList(_unitOfWork.categoryRepository.GetAll(), "Id", "Name");
+            ViewData["CoverTypeId"] = new SelectList(_unitOfWork.coverTypeRepository.GetAll(), "Id", "Name");
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert([Bind("Id,Title,Description,ISBN,Author,Price,Price50,Price100,CategoryId,CoverTypeId")] Product product,
+            IFormFile? file)
+        {
+            if (ModelState.IsValid)
+            {
+                var wwwRootPath = _webHostEnvironment.WebRootPath;
+
+                if (file != null)
+                {
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var productPath = Path.Combine(wwwRootPath, "images/product");
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    product.ImageUrl = fileName;
+                }
+
+                TempData["successCreate"] = "Add product successfully";
+                _unitOfWork.productRepository.Add(product);
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(product);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_unitOfWork.categoryRepository.GetAll(),"Id","Name");
@@ -92,7 +161,7 @@ namespace TEST.Areas.Admin.Controllers
             if (product != null)
             {
                 TempData["successDelete"] = "Delete product successfully";
-                _unitOfWork.productRepository.Delete(product);
+                _unitOfWork.productRepository.Delete(id);
             }
 
             _unitOfWork.Save();

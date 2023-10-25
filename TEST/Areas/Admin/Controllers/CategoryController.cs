@@ -53,22 +53,31 @@ namespace TEST.Areas.Admin.Controllers
             return View(category);
         }
 
-        public IActionResult Create()
+
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            Category category;
+
+            if (id == null || id == 0)
+            {
+                category = new Category();
+            }else
+            {
+                category = _unitOfWork.categoryRepository.GetEntityById((int)id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+            }
+            return View(category);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
+        public IActionResult Upsert([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
         {
             bool checkCategoryNameExist = _unitOfWork.categoryRepository.GetEntities(i => i.Name == category.Name).Any();
             bool checkCategoryDisplayOrderExist = _unitOfWork.categoryRepository.GetEntities(i => i.DisplayOrder == category.DisplayOrder).Any();
-
-
-
-            //validate name
-            //bool checkValidateName = _unitOfWork.categoryRepository.GetAll().Any(i => i.Name == category.Name);
 
             if (checkCategoryNameExist)
             {
@@ -76,85 +85,30 @@ namespace TEST.Areas.Admin.Controllers
                 ModelState.AddModelError("Name", "The category name already exist");
             }
 
-            //validate displayorder
-            //bool checkValidateDisplayOrder = _unitOfWork.categoryRepository.GetAll().Any(i => i.DisplayOrder == category.DisplayOrder);
-
             if (checkCategoryDisplayOrderExist)
             {
                 TempData["categoryDisplayOrderError"] = "The category display order already exist";
                 ModelState.AddModelError("DisplayOrder", "The category display order already exist");
             }
 
-
             if (ModelState.IsValid)
             {
-                TempData["successCreate"] = "Add category successfully";
-                _unitOfWork.categoryRepository.Add(category);
+                if (category.Id == 0)
+                {
+                    _unitOfWork.categoryRepository.Add(category);
+                    TempData["successCreate"] = "Add category successfully";
+                }
+                else
+                {
+                    TempData["successUpdate"] = "Update category successfully";
+                    _unitOfWork.categoryRepository.Update(category);
+                }
                 _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
-        }
+        }   
 
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = _unitOfWork.categoryRepository.GetEntityById((int)id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit([Bind("Id,Name,DisplayOrder,CreatedDate")] Category category)
-        {
-            bool checkCategoryNameExist = _unitOfWork.categoryRepository.GetEntities(i => i.Name == category.Name && i.Id != category.Id).Any();
-            bool checkCategoryDisplayOrderExist = _unitOfWork.categoryRepository.GetEntities(i => i.DisplayOrder == category.DisplayOrder && i.Id != category.Id).Any();
-            //bool checkValidateName = _unitOfWork.categoryRepository.GetAll().Any(i => i.Name == category.Name && i.Id != category.Id);
-
-            if (checkCategoryNameExist)
-            {
-                ModelState.AddModelError("Name", "The category name already exist");
-            }
-
-            //bool checkValidateDisplayOrder = _unitOfWork.categoryRepository.GetAll().Any(i => i.DisplayOrder == category.DisplayOrder && i.Id != category.Id);
-
-            if (checkCategoryDisplayOrderExist)
-            {
-                ModelState.AddModelError("DisplayOrder", "The category display order already exist");
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    TempData["successEdit"] = "Edit category successfully";
-                    _unitOfWork.categoryRepository.Update(category);
-                    _unitOfWork.Save();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
-        }
 
         public IActionResult Delete(int? id)
         {
@@ -180,7 +134,7 @@ namespace TEST.Areas.Admin.Controllers
             if (category != null)
             {
                 TempData["successDelete"] = "Delete category successfully";
-                _unitOfWork.categoryRepository.Delete(category);
+                _unitOfWork.categoryRepository.Delete(id);
             }
 
             _unitOfWork.Save();

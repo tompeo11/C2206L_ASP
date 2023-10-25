@@ -1,16 +1,15 @@
 ﻿@model TEST.Models.CoverType
 
-
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="text-white">Create cover type</h1>
+<h1 class="text-white">@(Model.Id != 0 ? "Update" : "Create")</h1>
 
 <hr />
 
-<form asp-action="Create" class="text-white">
+<form asp-action="Upsert" class="text-white">
     <div class="border p-3 mt-4">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -21,7 +20,7 @@
         </div>
 
         <div class="form-floating mb-3">
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <input type="submit" value="@(Model.Id != 0 ? "Update" : "Create")" class="btn btn-primary" />
             <a asp-controller="CoverType" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
         </div>
     </div>
@@ -32,5 +31,7 @@
 <partial name="_Notification" />
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

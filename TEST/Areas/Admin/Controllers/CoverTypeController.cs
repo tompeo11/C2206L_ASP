@@ -28,26 +28,46 @@ namespace TEST.Areas.Admin.Controllers
         }
 
 
-
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            CoverType coverType;
+
+            if(id == null || id == 0)
+            {
+                coverType = new CoverType();
+            }
+            else
+            {
+                coverType = _unitOfWork.coverTypeRepository.GetEntityById((int)id);
+                if (coverType == null)
+                {
+                    return  NotFound();
+                }
+            }
+            return View(coverType);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Name")] CoverType coverType)
+        public IActionResult Upsert([Bind("Id,Name")] CoverType coverType)
         {
             if (ModelState.IsValid)
             {
-                TempData["successCreate"] = "Add covertype successfully";
-                _unitOfWork.coverTypeRepository.Add(coverType);
+                if(coverType.Id == 0)
+                {
+                    _unitOfWork.coverTypeRepository.Add(coverType);
+                    TempData["successCreate"] = "Add covertype successfully";
+                }
+                else
+                {
+                    TempData["successUpdate"] = "Update covertype successfully";
+                    _unitOfWork.coverTypeRepository.Update(coverType);
+                }
                 _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(coverType);
         }
-
 
 
         public IActionResult Delete(int? id)
@@ -72,6 +92,7 @@ namespace TEST.Areas.Admin.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var coverType = _unitOfWork.coverTypeRepository.GetEntityById(id);
+
             if (coverType != null)
             {
                 TempData["successDelete"] = "Delete coverType successfully";
@@ -81,38 +102,6 @@ namespace TEST.Areas.Admin.Controllers
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         } 
-
-
-
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var coverType = _unitOfWork.coverTypeRepository.GetEntityById((int)id);
-
-            if (coverType == null)
-            {
-                return NotFound();
-            }
-            return View(coverType);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit([Bind("Id,Name")] CoverType coverType)
-        {
-            if (ModelState.IsValid)
-            {
-                TempData["successEdit"] = "Edit coverType successfully";
-                _unitOfWork.coverTypeRepository.Update(coverType);
-                _unitOfWork.Save();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(coverType);
-        }
 
         public IActionResult Details(int? id)
         {
