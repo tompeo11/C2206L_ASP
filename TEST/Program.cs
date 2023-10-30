@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TEST.DAO;
 using TEST.Data;
 using TEST.Models;
+using TEST.Services;
 
 namespace TEST
 {
@@ -14,10 +15,16 @@ namespace TEST
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("anyName")));
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-            //builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            //builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddSingleton<IBasketService, BasketService>();
+            
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(20);
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -31,6 +38,8 @@ namespace TEST
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthorization();
 
