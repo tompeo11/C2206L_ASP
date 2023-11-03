@@ -1,47 +1,100 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-
-@model List<BasketItem>;
+﻿@model List<BasketItem>;
 
 <div class="container p-3 text-white">
     <div class="row">
-        <div class="col-4">
+        <div class="col-12">
             <h1>Product List</h1>
         </div>
     </div>
 </div>
 
-<table class="table table-bordered table-striped table-hover text-white">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Author</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if(Model != null && Model.Count > 0)
-        {
-            @foreach (var item in Model)
+<form asp-action="UpdateCart">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Author</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+
+        <tbody id="tbbody">
+            @if (Model != null && Model.Count > 0)
             {
-                <tr>
-                    <input asp-for="@item.Product.Id" type="hidden" />
-                    <td>@item.Product.Title</td>
-                    <td>@item.Product.Description</td>
-                    <td>@item.Product.Author</td>
-                    <td>@item.Product.Price</td>
-                    <td><img src="~/images/product/@item.Product.ImageUrl" style="width: 80px;" /></td>
-                    <td>
-                        <input asp-for="@item.Count" class="form-control" type="number" />
-                    </td>
-                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <input asp-for="@item.Product.Id" type="hidden" />
+                        <td>
+                            <img src="/images/product/@item.Product.ImageUrl" style="width: 100px; height: 80px; object-fit: cover" />
+                        </td>
+                        <td>@item.Product.Title</td>
+                        <td>@item.Product.Description</td>
+                        <td>@item.Product.Price</td>
+                        <td>@item.Product.Author</td>
+                        <td>
+                            <input asp-for="@item.Count" class="form-control" type="number" />
+                        </td>
+                    </tr>
+                }
             }
+        </tbody>
+    </table>
+
+    <div>
+        <input type="button" id="btnAjaxUpdateBasket" value="Update Basket via Ajax" class="btn btn-outline-primary" />
+    </div>
+</form>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        loadShoppingCartListAsJson();
+
+        function loadShoppingCartListAsJson() {
+            $.ajax('/customer/basket/getall', {
+                type: "GET",
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    console.log(data);
+                },
+                error(xhr, status, error) {
+                    console.log(error);
+                }
+            });
         }
-    </tbody>
-</table>
+
+
+        $("#btnAjaxUpdateBasket").click(function () {
+            var basketItemList = [];
+
+            $("#tbbody > tr").each(function (index, item) {
+                var basketItem = {};
+                basketItem.Id = parseInt($(item).find("input[id$='Product_Id']").val());
+                basketItem.Count = parseInt($(item).find("input[id$='Count']").val());
+                basketItemList.push(basketItem);
+            });
+            console.log(JSON.stringify(basketItemList));
+
+            $.ajax('/customer/basket/updatecart', {
+                type: "POST",
+                contentType: 'application/json',
+                headers: {
+                    RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                data: JSON.stringify(basketItemList),
+                success: function (data, status, xhr) {
+                    window.location.href = data.redirectToUrl;
+                },
+                error(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        });
+    });
+</script>

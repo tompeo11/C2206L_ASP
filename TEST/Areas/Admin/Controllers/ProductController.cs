@@ -36,10 +36,13 @@ namespace TEST.Areas.Admin.Controllers
 
 
 
-
+        
         public IActionResult Upsert(int? id)
         {
-            Product product;
+			ViewData["CategoryId"] = new SelectList(_unitOfWork.categoryRepository.GetAll(), "Id", "Name");
+			ViewData["CoverTypeId"] = new SelectList(_unitOfWork.coverTypeRepository.GetAll(), "Id", "Name");
+
+			Product product;
 
             if (id == null || id == 0)
             {
@@ -53,9 +56,7 @@ namespace TEST.Areas.Admin.Controllers
                     return NotFound();
                 }
             }
-
-            ViewData["CategoryId"] = new SelectList(_unitOfWork.categoryRepository.GetAll(), "Id", "Name");
-            ViewData["CoverTypeId"] = new SelectList(_unitOfWork.coverTypeRepository.GetAll(), "Id", "Name");
+            
             return View(product);
         }
 

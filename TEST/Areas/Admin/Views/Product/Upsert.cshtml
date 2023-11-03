@@ -85,11 +85,14 @@
 
 
         <div class="form-floating mb-3">
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <input type="submit" value="@(Model.Id != 0 ? "Update" : "Create")" class="btn btn-primary" />
             <a asp-controller="Product" asp-action="Index" class="btn btn-primary" style="width: 150px;">Back to list</a>
         </div>
     </div>
 </form>
+
+<partial name="_Notification" />
+
 
 @section Scripts {
     @{
