@@ -1,0 +1,46 @@
+﻿@model TEST.Models.VaccineSchedule
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>VaccineSchedule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Name" />
+                <label asp-for="Name" class="control-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="VaccinationDates" class="form-control" placeholder="VaccinationDates" />
+                <label asp-for="VaccinationDates" class="control-label"></label>
+                <span asp-validation-for="VaccinationDates" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VaccineId" class="control-label">Vaccine Name</label>
+                <select asp-for="VaccineId" class="form-control" asp-items="ViewBag.VaccineId"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CreateAt" class="control-label"></label>
+                <input asp-for="CreateAt" class="form-control" />
+                <span asp-validation-for="CreateAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

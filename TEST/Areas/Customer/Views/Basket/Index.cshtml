@@ -1,22 +1,20 @@
-﻿@model List<BasketItem>;
+﻿@model List<BasketItem>
 
-<div class="container p-3 text-white">
+<div class="container p-3">
     <div class="row">
         <div class="col-12">
-            <h1>Product List</h1>
+            <h2 class="text-primary">Shopping Cart</h2>
         </div>
     </div>
 </div>
 
 <form asp-action="UpdateCart">
-    <table class="table table-bordered table-striped">
+    <table class="table table-dark">
         <thead>
             <tr>
-                <th></th>
-                <th>Title</th>
-                <th>Description</th>
+                <th>Name</th>
+                <th>Country</th>
                 <th>Price</th>
-                <th>Author</th>
                 <th>Quantity</th>
             </tr>
         </thead>
@@ -27,16 +25,12 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <input asp-for="@item.Product.Id" type="hidden" />
-                        <td>
-                            <img src="/images/product/@item.Product.ImageUrl" style="width: 100px; height: 80px; object-fit: cover" />
-                        </td>
-                        <td>@item.Product.Title</td>
-                        <td>@item.Product.Description</td>
-                        <td>@item.Product.Price</td>
-                        <td>@item.Product.Author</td>
-                        <td>
-                            <input asp-for="@item.Count" class="form-control" type="number" />
+                        <input asp-for="@item.Vaccine.Id" type="hidden" />
+                        <td>@item.Vaccine.Name</td>
+                        <td>@item.Vaccine.Country</td>
+                        <td>@item.Vaccine.Price</td>
+                        <td class="col-1">
+                            <input asp-for="@item.Count" class="form-control justify-content-end" type="number" />
                         </td>
                     </tr>
                 }
@@ -45,56 +39,57 @@
     </table>
 
     <div>
-        <input type="button" id="btnAjaxUpdateBasket" value="Update Basket via Ajax" class="btn btn-outline-primary" />
+        <input type="button" id="btnAjaxUpdateBasket" value="Update" class="btn btn-secondary" />
     </div>
 </form>
 
 
 
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            loadShoppingCartListAsJson();
 
-<script>
-    $(document).ready(function () {
-        loadShoppingCartListAsJson();
+            function loadShoppingCartListAsJson() {
+                $.ajax('/customer/basket/getall', {
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data, status, xhr) {
+                        console.log(data);
+                    },
+                    error(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
 
-        function loadShoppingCartListAsJson() {
-            $.ajax('/customer/basket/getall', {
-                type: "GET",
-                dataType: "json",
-                success: function (data, status, xhr) {
-                    console.log(data);
-                },
-                error(xhr, status, error) {
-                    console.log(error);
-                }
+
+            $("#btnAjaxUpdateBasket").click(function () {
+                var basketItemList = [];
+
+                $("#tbbody > tr").each(function (index, item) {
+                    var basketItem = {};
+                    basketItem.Id = parseInt($(item).find("input[id$='Vaccine_Id']").val());
+                    basketItem.Count = parseInt($(item).find("input[id$='Count']").val());
+                    basketItemList.push(basketItem);
+                });
+                console.log(JSON.stringify(basketItemList));
+
+                $.ajax('/customer/basket/updatecart', {
+                    type: "POST",
+                    contentType: 'application/json',
+                    headers: {
+                        RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    data: JSON.stringify(basketItemList),
+                    success: function (data, status, xhr) {
+                        window.location.href = data.redirectToUrl;
+                    },
+                    error(xhr, status, error) {
+                        console.log(error);
+                    }
+                })
             });
-        }
-
-
-        $("#btnAjaxUpdateBasket").click(function () {
-            var basketItemList = [];
-
-            $("#tbbody > tr").each(function (index, item) {
-                var basketItem = {};
-                basketItem.Id = parseInt($(item).find("input[id$='Product_Id']").val());
-                basketItem.Count = parseInt($(item).find("input[id$='Count']").val());
-                basketItemList.push(basketItem);
-            });
-            console.log(JSON.stringify(basketItemList));
-
-            $.ajax('/customer/basket/updatecart', {
-                type: "POST",
-                contentType: 'application/json',
-                headers: {
-                    RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
-                },
-                data: JSON.stringify(basketItemList),
-                success: function (data, status, xhr) {
-                    window.location.href = data.redirectToUrl;
-                },
-                error(xhr, status, error) {
-                    console.log(error);
-                }
-            })
         });
-    });
-</script>
+    </script>
+}

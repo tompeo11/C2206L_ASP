@@ -19,11 +19,18 @@ namespace TEST.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var product = _unitOfWork.productRepository.GetEntities(
-                filter: null,
-                orderBy: null,
-                includeProperties: "Category,CoverType");
-            return View(product);
+            var schedules = _unitOfWork.vaccineScheduleRepository.GetAll("Vaccine");
+            return View(schedules);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var schedules = _unitOfWork.vaccineScheduleRepository.GetEntities(i => i.Id == id, "Vaccine.Type").FirstOrDefault();
+            if (schedules is null)
+            {
+                return NotFound();
+            }
+            return View(schedules);
         }
 
         public IActionResult Privacy()
@@ -35,23 +42,6 @@ namespace TEST.Areas.Customer.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public IActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = _unitOfWork.productRepository.GetEntities((p => p.Id == id), includeProperties: "Category,CoverType").FirstOrDefault();
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
         }
     }
 }

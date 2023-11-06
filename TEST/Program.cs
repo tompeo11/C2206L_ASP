@@ -48,9 +48,7 @@ namespace TEST
 
             app.MapRazorPages();
 
-            AppDbInitializer.Seed(app);
-
-
+            //AppDbInitializer.Seed(app);
 
             app.Run();
         }

@@ -59,20 +59,18 @@ namespace TEST.Areas.Customer.Controllers
         {
             if (HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable) != default)
             {
-                HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable);
-
                 for (int i = 0; i < data.Count; i++)
                 {
                     if (data[i].Count != 0)
                     {
                         int id = data[i].Id;
                         int newQuantity = data[i].Count;
-                            
+
                         List<BasketItem> itemList = HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable);
 
-                        if (itemList.Where(i => i.Product.Id == id).Any())
+                        if (itemList.Where(i => i.Vaccine.Id == id).Any())
                         {
-                            int currentQuantity = itemList.Where(i => i.Product.Id == id).Select(i => i.Count).FirstOrDefault();
+                            int currentQuantity = itemList.Where(i => i.Vaccine.Id == id).Select(i => i.Count).FirstOrDefault();
                             int change = newQuantity - currentQuantity;
                             _basketService.AddItem(data[i].Id, change);
                         }

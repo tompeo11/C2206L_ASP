@@ -2,7 +2,7 @@
 {
     public class BasketItem
     {
-        public Product Product { get; set; }
+        public Vaccine Vaccine { get; set; }
         public int Count { get; set; }
     }
 }

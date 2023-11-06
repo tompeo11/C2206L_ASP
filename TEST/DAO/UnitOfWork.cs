@@ -6,51 +6,52 @@ namespace TEST.DAO
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
-        private GenericRepository<Category> _categoryRepository;
-        private GenericRepository<CoverType> _coverTypeRepository;
-        private GenericRepository<Product> _productRepository;
+
+        private GenericRepository<Vaccine> _vaccineRepository;
+        private GenericRepository<VaccineType> _vaccineTypeRepository;
+        private GenericRepository<VaccineSchedule> _vaccineScheduleRepository;
 
         public UnitOfWork(ApplicationDbContext dbContext) 
         {
             _db = dbContext;
         }
 
-        public GenericRepository<Category> categoryRepository
+        public GenericRepository<Vaccine> vaccineRepository
         {
             get
             {
-                if (_categoryRepository == null)
+                if (_vaccineRepository == null)
                 {
-                    this._categoryRepository = new GenericRepository<Category>(_db);
+                    this._vaccineRepository = new GenericRepository<Vaccine>(_db);
                 }
 
-                return _categoryRepository;
+                return _vaccineRepository;
             }
         }
 
-        public GenericRepository<CoverType> coverTypeRepository
+        public GenericRepository<VaccineType> vaccineTypeRepository
         {
             get
             {
-                if (_coverTypeRepository == null)
+                if (_vaccineTypeRepository == null)
                 {
-                    this._coverTypeRepository = new GenericRepository<CoverType>(_db);
+                    this._vaccineTypeRepository = new GenericRepository<VaccineType>(_db);
                 }
 
-                return _coverTypeRepository;
+                return _vaccineTypeRepository;
             }
         }
 
-        public GenericRepository<Product> productRepository
+        public GenericRepository<VaccineSchedule> vaccineScheduleRepository
         {
             get
             {
-                if (_productRepository == null)
+                if (_vaccineScheduleRepository == null)
                 {
-                    this._productRepository = new GenericRepository<Product>(_db);
+                    this._vaccineScheduleRepository = new GenericRepository<VaccineSchedule>(_db);
                 }
 
-                return _productRepository;
+                return _vaccineScheduleRepository;
             }
         }
 

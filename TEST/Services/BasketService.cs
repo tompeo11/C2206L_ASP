@@ -19,38 +19,23 @@ namespace TEST.Services
 
         public void AddItem(int id, int quantity)
         {
-            List<BasketItem> shoppingCartList;
-            if (_contextAccessor.HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable) != default) 
-            {
-                shoppingCartList = _contextAccessor.HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable);
-                
-                if (shoppingCartList.Where(i => i.Product.Id == id).Any())
-                {
-                    shoppingCartList.Where(i => i.Product.Id == id).Select(x =>
-                    {
-                        x.Count += quantity;
-                        return x;
-                    }).ToList();
-                }else
-                {
-                    shoppingCartList.Add(new BasketItem
-                    {
-                        Count = quantity,
-                        Product = _unitOfWork.productRepository.GetEntityById(id)
-                    });
-                }
-            }else
-            {
-                shoppingCartList = new List<BasketItem>
-                {
-                    new BasketItem
-                    {
-                        Count = quantity,
-                        Product = _unitOfWork.productRepository.GetEntityById(id)
-                    }
-                };
-            }
+            List<BasketItem> shoppingCartList = _contextAccessor.HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable) ?? new List<BasketItem>(); //Neu Khong Co Thi Tao Moi
 
+            var existingItem = shoppingCartList.FirstOrDefault(i => i.Vaccine.Id == id);
+
+            if (existingItem != null)
+            {
+                existingItem.Count += quantity;
+
+            }
+            else
+            {
+                shoppingCartList.Add(new BasketItem
+                {
+                    Count = quantity,
+                    Vaccine = _unitOfWork.vaccineRepository.GetEntityById(id)
+                });
+            }
             _contextAccessor.HttpContext.Session.Set<List<BasketItem>>(ShoppingCartSessionVariable, shoppingCartList);
         }
 
@@ -61,15 +46,15 @@ namespace TEST.Services
             {
                 List<BasketItem> shoppingCartList = _contextAccessor.HttpContext.Session.Get<List<BasketItem>>(ShoppingCartSessionVariable);
 
-                shoppingCartList.RemoveAll(i => i.Product.Id == id);
+                shoppingCartList.RemoveAll(i => i.Vaccine.Id == id);
 
                 _contextAccessor.HttpContext.Session.Set<List<BasketItem>>(ShoppingCartSessionVariable, shoppingCartList);
             }
         }
-
+            
         public void ClearBasket()
         {
-            throw new NotImplementedException();
+            _contextAccessor.HttpContext.Session.Remove(ShoppingCartSessionVariable);
         }
 
     }
