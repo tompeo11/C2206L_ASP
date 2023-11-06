@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TEST.Data;
 using TEST.Models;
+using TEST.DAO;
 
 namespace TEST.Areas.Admin.Controllers
 {
@@ -14,10 +15,12 @@ namespace TEST.Areas.Admin.Controllers
     public class VaccineController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VaccineController(ApplicationDbContext context)
+        public VaccineController(ApplicationDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Admin/Vaccine
@@ -26,7 +29,7 @@ namespace TEST.Areas.Admin.Controllers
             var applicationDbContext = _context.Vaccines.Include(v => v.Type);
             return View(await applicationDbContext.ToListAsync());
         }
-
+            
         // GET: Admin/Vaccine/Details/5
         public async Task<IActionResult> Details(int? id)
         {

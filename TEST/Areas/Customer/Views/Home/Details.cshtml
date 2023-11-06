@@ -1,4 +1,4 @@
-﻿@model TEST.Models.VaccineSchedule
+﻿@model TEST.Models.Vaccine
 
 @{
     ViewData["Title"] = "Details";
@@ -12,9 +12,10 @@
 <div>
     <div class="row">
          <div class="col">
-            <p>Vaccine Name: @Model.Vaccine.Name</p>
-            <p>Manufacturing Country: @Model.Vaccine.Country</p>
-            <p>Expiration Date: @Model.Vaccine.ExpirationDate</p>
+            <p>Vaccine Name: @Model.Name</p>
+            <p>Vaccine Type Name: @Model.Type.Name</p>
+            <p>Manufacturing Country: @Model.Country</p>
+            <p>Expiration Date: @Model.ExpirationDate</p>
          </div>
     </div>
    

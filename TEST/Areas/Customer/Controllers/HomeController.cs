@@ -19,18 +19,18 @@ namespace TEST.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var schedules = _unitOfWork.vaccineScheduleRepository.GetAll("Vaccine");
-            return View(schedules);
+            var vaccines = _unitOfWork.vaccineRepository.GetAll("Type");
+            return View(vaccines);
         }
 
         public IActionResult Details(int id)
         {
-            var schedules = _unitOfWork.vaccineScheduleRepository.GetEntities(i => i.Id == id, "Vaccine.Type").FirstOrDefault();
-            if (schedules is null)
+            var vaccines = _unitOfWork.vaccineRepository.GetEntities(i => i.Id == id, "Type").FirstOrDefault();
+            if (vaccines is null)
             {
                 return NotFound();
             }
-            return View(schedules);
+            return View(vaccines);
         }
 
         public IActionResult Privacy()
